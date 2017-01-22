@@ -20,13 +20,13 @@
 		$password = "";
 		$dbname   = "quietgym";
 		try {
-		    $db = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
-		    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	    } catch (PDOException $e) {
-	    	echo date('Y-m-d H:i:s') . $e->getMessage() . PHP_EOL;
-	    	die();
-    	}
-	    return $db;
+			$db = new PDO("mysql:host=$hostname;dbname=$dbname", $username, $password);
+			$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch (PDOException $e) {
+			echo date('Y-m-d H:i:s') . $e->getMessage() . PHP_EOL;
+			die();
+		}
+		return $db;
 	}
 
 	// Convert the current hour value into a timeslot of the form '06:00-07:00'
@@ -39,7 +39,7 @@
 	}
 
 	// Update the column corresponding to today if the row already exists
- 	function updateRow($res, $db, $currDay, $numUsers, $currTimeslot, $currWeek, $currYear) {
+	function updateRow($res, $db, $currDay, $numUsers, $currTimeslot, $currWeek, $currYear) {
 		$id  = $res->id;
 		try {
 			$stmt = $db->prepare("UPDATE timeslots SET $currDay = :numUsers WHERE id = :id");
@@ -47,33 +47,34 @@
 			$stmt->bindParam(':id', $id);
 			$stmt->execute();
 		} catch (PDOException $e) {
-	    	echo date('Y-m-d H:i:s') . ": averageValues.php (row update) Error: " . $e->getMessage() . PHP_EOL;
-    		die();
+			echo date('Y-m-d H:i:s') . ": averageValues.php (row update) Error: " . $e->getMessage() . PHP_EOL;
+			die();
 		}	
 
 		// Log successful row update
 		echo "Row containing $currTimeslot, Week $currWeek, $currYear: updated numUsers for $currDay." . PHP_EOL; 
- 	}
+	}
 
- 	// Insert the row for the current timeslot if it does not yet exist
- 	function createRow($currDay, $currTimeslot, $numUsers, $currWeek, $currMonth, $currYear, $db) {
-	 	try {
-		    $stmt = $db->prepare("INSERT INTO timeslots (timeslot, $currDay, Week, Month, Year)
+	// Insert the row for the current timeslot if it does not yet exist
+		function createRow($currDay, $currTimeslot, $numUsers, $currWeek, $currMonth, $currYear, $db) {
+			try {
+			$stmt = $db->prepare("INSERT INTO timeslots (timeslot, $currDay, Week, Month, Year)
 									VALUES (:currTimeslot, :numUsers, :currWeek,
 				 					:currMonth, :currYear)");
-		    $stmt->bindParam(':currTimeslot', $currTimeslot);
-		    $stmt->bindParam(':numUsers', $numUsers);
-		    $stmt->bindParam(':currWeek', $currWeek);
-		    $stmt->bindParam(':currMonth', $currMonth);
-		    $stmt->bindParam(':currYear', $currYear);
-		    $stmt->execute();
+			$stmt->bindParam(':currTimeslot', $currTimeslot);
+			$stmt->bindParam(':numUsers', $numUsers);
+			$stmt->bindParam(':currWeek', $currWeek);
+			$stmt->bindParam(':currMonth', $currMonth);
+			$stmt->bindParam(':currYear', $currYear);
+			$stmt->execute();
 
-	    } catch (PDOException $e) {
-	    	echo date('Y-m-d H:i:s') . ": averageValues.php (new row creation) Error: " . $e->getMessage() . PHP_EOL;
-	    	die();
-	    }
+		} catch (PDOException $e) {
+			echo date('Y-m-d H:i:s') . ": averageValues.php (new row creation) Error: " . $e->getMessage() . PHP_EOL;
+		die();
+		}
 
-	    // Log successful row creation
+		// Log successful row creation
 		echo "$currDay, Week $currWeek, $currYear: Row created with timeslot $currTimeslot." . PHP_EOL; 
- 	}
+	}
+
 ?>
