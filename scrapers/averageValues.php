@@ -17,7 +17,7 @@
 		$numUsers = $res->numUsers;
 
 		// Check if attendance figures for the current hour exist
-		if (empty($numUsers) || $numUsers == null) {
+		if (!isset($numUsers) {
 			echo date('Y-m-d H:i:s') . ": averageValues.php error: No attendance data for the current hour." . PHP_EOL;
 			die();
 		}
